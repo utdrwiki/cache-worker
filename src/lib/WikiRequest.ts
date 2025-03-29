@@ -23,7 +23,7 @@ export class WikiRequest {
   }
 
   get targetArticle(): { ns: string; title: string; } | null {
-    if (this.url.pathname === 'index.php') {
+    if (this.url.pathname === '/index.php') {
       const title = this.url.searchParams.get('title');
 
       if (!title) {

@@ -96,7 +96,16 @@ export class WikiRequest {
     return clientPrefs;
   }
 
-  async fetch(): Promise<WikiResponse> {
+  async fetch(): Promise<WikiResponse> {    
+    // Change index.php lookups to go to `/w/` instead.
+    const targetArticle = this.targetArticle;
+    if (this.isEligibleForCache && targetArticle && this.url.pathname === '/index.php') {
+      const { ns, title } = targetArticle;
+      this.url.pathname = `/w/${ns ? `${ns}:` : ""}${title}`;
+      this.url.search = "";
+      this.req = new Request(this.url, this.req);
+    }
+
     const res = await fetch(this.req, {
       cf: {
         cacheTtlByStatus: this.isEligibleForCache ? {

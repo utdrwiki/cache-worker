@@ -2,7 +2,7 @@
 	"name": "cache-worker",
 	"version": "1.0.0",
 	"private": true,
-	"packageManager": "yarn@^4.5.0",
+	"packageManager": "yarn@4.5.0",
 	"scripts": {
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",

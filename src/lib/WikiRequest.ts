@@ -103,7 +103,7 @@ export class WikiRequest {
       const { ns, title } = targetArticle;
       this.url.pathname = `/w/${ns ? `${ns}:` : ""}${title}`;
       this.url.search = "";
-      this.req = new Request(this.url, this.req);
+      this.req = new Request(this.url.toString(), this.req);
     }
 
     const res = await fetch(this.req, {

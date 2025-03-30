@@ -5,7 +5,9 @@ export interface LogLine {
   error?: Error;
 }
 
-export interface ClientPref {
+export interface ClassReplacement {
   classPrefix: string;
   className: string;
 }
+
+export interface ClientPref extends ClassReplacement {}

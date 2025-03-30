@@ -1,9 +1,25 @@
-function buildClassReplacementRegex(tag: string, classPrefix: string) {
-  return new RegExp(`<${tag}([^>]*? class=")([^"]* )?${classPrefix}[\\w-]*( [^"]*)?("[^>]*>)`, 'gu');
+import { ClassReplacement } from '../types';
+
+class ClassReplacementElementHandler {
+  private replacements: ClassReplacement[];
+
+  constructor(replacements: ClassReplacement[]) {
+    this.replacements = replacements;
+  }
+
+  element(element: Element) {
+    element.setAttribute('class', element
+      .getAttribute('class')
+      ?.split(' ')
+      .map(className => this.replacements
+        .find(r => className.startsWith(r.classPrefix))?.className || className)
+      .join(' ') || ''
+    );
+  }
 }
 
-export function replaceHtmlClassByPrefix(htmlText: string, tag: string, classReplacement: { classPrefix: string, className: string }) {
-  const regex = buildClassReplacementRegex(tag, classReplacement.classPrefix);
-  const replacement = `<${tag}$1$2${classReplacement.className}$3$4`;
-  return htmlText.replace(regex, replacement);
+export function replaceHtmlClasses(response: Response, replacements: ClassReplacement[]): Response {
+  return new HTMLRewriter()
+    .on('html', new ClassReplacementElementHandler(replacements))
+    .transform(response);
 }

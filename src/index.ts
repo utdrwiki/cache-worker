@@ -48,7 +48,7 @@ export default {
         event: 'overriding_client_prefs',
         clientPrefs,
       });
-      await response.overrideClientPrefs(clientPrefs);
+      response.overrideClientPrefs(clientPrefs);
     }
 
     return response.res;

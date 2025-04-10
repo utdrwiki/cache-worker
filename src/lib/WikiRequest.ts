@@ -12,6 +12,11 @@ const DISQUALIFYING_QUERY_KEYS = [
   'redirect'
 ];
 
+interface Article {
+  ns: string;
+  title: string;
+}
+
 export class WikiRequest {
   private req: Request;
   private env: Env;
@@ -30,29 +35,39 @@ export class WikiRequest {
     this.url = new URL(this.req.url);
   }
 
-  get targetArticle(): { ns: string; title: string; } | null {
+  extractArticle(title: string | null): Article | null {
+    if (!title) {
+      return { ns: '', title: 'Main_Page' };
+    }
+
+    let [ns, articleTitle] = title.split(':');
+    if (articleTitle === '') {
+      // Invalid title
+      return null;
+    } else if (!articleTitle) {
+      // No namespace given (main)
+      articleTitle = ns;
+      ns = '';
+    }
+
+    return { ns, title: articleTitle };
+  }
+
+  get targetArticle(): Article | null {
     if (this.url.pathname === '/index.php') {
       const title = this.url.searchParams.get('title');
-
-      if (!title) {
-        return { ns: '', title: 'Main_Page' };
-      }
-
-      let [ns, articleTitle] = title.split(':');
-      if (articleTitle === '') {
-        // Invalid title
-        return null;
-      } else if (!articleTitle) {
-        // No namespace given (main)
-        articleTitle = ns;
-        ns = '';
-      }
-
-      return { ns, title: articleTitle };
-    } else if (this.url.pathname.startsWith('/w/') || this.url.pathname === '/') {
-      return { ns: '', title: this.url.pathname.split('/w/')[1] || 'Main_Page' };
+      return this.extractArticle(title);
+    } else if (this.url.pathname === '/') {
+      return { ns: '', title: 'Main_Page' };
+    } else if (this.url.pathname.startsWith('/w/')) {
+      // NOTE: We are not decoding the article URL here, because we don't
+      // actually use the title. If we need consistent results on both the
+      // index.php path and this path, we would need to decode the URI here.
+      // However, we would also have to handle errors with malformed URIs, so
+      // we're not doing it right now.
+      return this.extractArticle(this.url.pathname.slice(3));
     }
-      return null;
+    return null;
   }
 
   get isEligibleForCache(): boolean {

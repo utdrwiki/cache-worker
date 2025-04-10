@@ -2,7 +2,15 @@ import { parse } from 'cookie';
 import { ClientPref } from '../types';
 import { WikiResponse } from './WikiResponse';
 
-const DISQUALIFYING_QUERY_KEYS = ['action', 'veaction', 'diff', 'curid', 'oldid', 'debug'];
+const DISQUALIFYING_QUERY_KEYS = [
+  'action',
+  'veaction',
+  'diff',
+  'curid',
+  'oldid',
+  'debug',
+  'redirect'
+];
 
 export class WikiRequest {
   private req: Request;

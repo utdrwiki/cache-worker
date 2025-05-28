@@ -8,8 +8,8 @@ compatibility_flags = ["nodejs_compat"]
 enabled = true
 
 [vars]
-PRIVATE_COOKIE_NAMES = ["utdr-_session", "utdr-Token"]
-CLIENT_PREFS_COOKIE_NAME = "utdr-mwclientpreferences"
+PRIVATE_COOKIE_NAMES = ["utdrprod-_Session", "utdrprod-Token"]
+CLIENT_PREFS_COOKIE_NAME = "utdrprod-mwclientpreferences"
 CLIENT_PREFS_CLASS_PREFIXES = ["skin-theme-clientpref-", "vector-feature-limited-width-clientpref-", "vector-feature-page-tools-pinned-clientpref-"]
 PAGE_TTL = 86400
 MISSING_PAGE_TTL = 3600

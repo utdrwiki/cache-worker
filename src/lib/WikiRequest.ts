@@ -9,7 +9,10 @@ const DISQUALIFYING_QUERY_KEYS = [
   'curid',
   'oldid',
   'debug',
-  'redirect'
+  'redirect',
+  'useparsoid',
+  'uselang',
+  'useskin',
 ];
 
 interface Article {

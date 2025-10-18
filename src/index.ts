@@ -29,16 +29,10 @@ export default {
       ok: response.res.ok,
       originRequestId: response.res.headers.get("x-request-id"),
       cacheStatus,
+      isEligibleForCache: request.isEligibleForCache,
     });
 
     if (!request.isEligibleForCache || !response.res.ok) {
-      log({
-        event: 'ineligible_for_cache',
-        cookies: Object.keys(request.cookies),
-        path: request.url.pathname,
-        qs: [...request.url.searchParams.entries()],
-      });
-
       return response.res;
     }
 

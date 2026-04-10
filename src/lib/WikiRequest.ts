@@ -13,6 +13,7 @@ const DISQUALIFYING_QUERY_KEYS = [
   'useparsoid',
   'uselang',
   'useskin',
+  'withgadget',
 ];
 
 interface Article {

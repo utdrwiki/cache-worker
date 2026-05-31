@@ -21,12 +21,21 @@ interface Article {
   title: string;
 }
 
+enum EligibilityReason {
+  HasDisqualifyingQueryKey = 'query',
+  HasPrivateCookie = 'cookie',
+  NotInCachedNamespace = 'namespace',
+  Eligible = 'eligible',
+}
+
 export class WikiRequest {
   private req: Request;
-  private env: Env;
-  private isDev: boolean;
+  private readonly env: Env;
+  private readonly isDev: boolean;
   public readonly cookies: Record<string, string | undefined> = {};
   public readonly url: URL;
+  public readonly isEligibleForCache: boolean;
+  private readonly eligibilityReason: EligibilityReason;
 
   constructor(req: Request, env: Env) {
     this.req = req;
@@ -39,6 +48,8 @@ export class WikiRequest {
 
     this.url = new URL(this.req.url);
     this.isDev = this.url.host.startsWith('dev.');
+    this.eligibilityReason = this.getEligibility();
+    this.isEligibleForCache = this.eligibilityReason === EligibilityReason.Eligible;
   }
 
   extractArticle(title: string | null): Article | null {
@@ -77,31 +88,31 @@ export class WikiRequest {
     return null;
   }
 
-  get isEligibleForCache(): boolean {
+  getEligibility(): EligibilityReason {
     const cookieNames = this.isDev ?
       this.env.PRIVATE_COOKIE_NAMES_DEV :
       this.env.PRIVATE_COOKIE_NAMES;
     for (const cookieName of cookieNames) {
       if (this.cookies[cookieName]) {
-        return false;
+        return EligibilityReason.HasPrivateCookie;
       }
     }
 
     const article = this.targetArticle;
     if (!article) {
-      return false;
+      return EligibilityReason.NotInCachedNamespace;
     }
 
     if (DISQUALIFYING_QUERY_KEYS.some(key => this.url.searchParams.has(key))) {
-      return false;
+      return EligibilityReason.HasDisqualifyingQueryKey;
     }
 
     const cachedNamespaces: string[] = this.env.CACHED_NAMESPACES;
     if (!cachedNamespaces.includes(article.ns)) {
-      return false;
+      return EligibilityReason.NotInCachedNamespace;
     }
 
-    return true;
+    return EligibilityReason.Eligible;
   }
 
   getClientPrefs(): ClientPref[] {
@@ -141,6 +152,8 @@ export class WikiRequest {
       this.req = new Request(this.url.toString(), this.req);
     }
 
+    const headers = new Headers(this.req.headers);
+    headers.set('X-Eligibility-Reason', this.eligibilityReason);
     const res = await fetch(this.req, {
       cf: {
         cacheTtlByStatus: this.isEligibleForCache ? {
@@ -150,7 +163,8 @@ export class WikiRequest {
           '500-599': -1,
         } : undefined,
         cacheEverything: this.isEligibleForCache,
-      }
+      },
+      headers,
     });
 
     return new WikiResponse(res);

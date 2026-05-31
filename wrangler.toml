@@ -11,8 +11,10 @@ enabled = true
 
 [vars]
 PRIVATE_COOKIE_NAMES = ["utdrprod-_Session", "utdrprod-Token"]
+PRIVATE_COOKIE_NAMES_DEV = ["utdrdev-_Session", "utdrdev-Token"]
 CLIENT_PREFS_COOKIE_NAME = "utdrprod-mwclientpreferences"
+CLIENT_PREFS_COOKIE_NAME_DEV = "utdrdev-mwclientpreferences"
 CLIENT_PREFS_CLASS_PREFIXES = ["skin-theme-clientpref-", "vector-feature-limited-width-clientpref-", "vector-feature-page-tools-pinned-clientpref-"]
 PAGE_TTL = 86400
 MISSING_PAGE_TTL = 3600
-CACHED_NAMESPACES = ["", "Category", "Project", "Undertale_Wiki", "Deltarune_Wiki"]
+CACHED_NAMESPACES = ["", "Category", "Project", "Undertale_Wiki", "Deltarune_Wiki", "Categoría", "Categor%C3%ADa", "Categoria", "Catégorie", "Cat%C3%A9gorie", "カテゴリ", "%E3%82%AB%E3%83%86%E3%82%B4%E3%83%AA", "Wiki_Undertale_FR"]

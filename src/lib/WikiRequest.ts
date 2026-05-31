@@ -24,6 +24,7 @@ interface Article {
 export class WikiRequest {
   private req: Request;
   private env: Env;
+  private isDev: boolean;
   public readonly cookies: Record<string, string | undefined> = {};
   public readonly url: URL;
 
@@ -37,6 +38,7 @@ export class WikiRequest {
     }
 
     this.url = new URL(this.req.url);
+    this.isDev = this.url.host.startsWith('dev.');
   }
 
   extractArticle(title: string | null): Article | null {
@@ -62,6 +64,7 @@ export class WikiRequest {
       const title = this.url.searchParams.get('title');
       return this.extractArticle(title);
     } else if (this.url.pathname === '/') {
+      // NOTE: Not every wiki uses Main_Page as the main page.
       return { ns: '', title: 'Main_Page' };
     } else if (this.url.pathname.startsWith('/w/')) {
       // NOTE: We are not decoding the article URL here, because we don't
@@ -75,7 +78,10 @@ export class WikiRequest {
   }
 
   get isEligibleForCache(): boolean {
-    for (const cookieName of this.env.PRIVATE_COOKIE_NAMES) {
+    const cookieNames = this.isDev ?
+      this.env.PRIVATE_COOKIE_NAMES_DEV :
+      this.env.PRIVATE_COOKIE_NAMES;
+    for (const cookieName of cookieNames) {
       if (this.cookies[cookieName]) {
         return false;
       }
@@ -99,7 +105,9 @@ export class WikiRequest {
   }
 
   getClientPrefs(): ClientPref[] {
-    const clientPrefsCookie = this.cookies[this.env.CLIENT_PREFS_COOKIE_NAME];
+    const clientPrefsCookie = this.cookies[this.isDev ?
+      this.env.CLIENT_PREFS_COOKIE_NAME_DEV :
+      this.env.CLIENT_PREFS_COOKIE_NAME];
     if (!clientPrefsCookie) {
       return [];
     }

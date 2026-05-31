@@ -98,17 +98,13 @@ export class WikiRequest {
       }
     }
 
-    const article = this.targetArticle;
-    if (!article) {
-      return EligibilityReason.NotInCachedNamespace;
-    }
-
     if (DISQUALIFYING_QUERY_KEYS.some(key => this.url.searchParams.has(key))) {
       return EligibilityReason.HasDisqualifyingQueryKey;
     }
 
+    const article = this.targetArticle;
     const cachedNamespaces: string[] = this.env.CACHED_NAMESPACES;
-    if (!cachedNamespaces.includes(article.ns)) {
+    if (!article || !cachedNamespaces.includes(article.ns)) {
       return EligibilityReason.NotInCachedNamespace;
     }
 

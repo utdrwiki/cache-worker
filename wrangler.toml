@@ -17,4 +17,24 @@ CLIENT_PREFS_COOKIE_NAME_DEV = "utdrdev-mwclientpreferences"
 CLIENT_PREFS_CLASS_PREFIXES = ["skin-theme-clientpref-", "vector-feature-limited-width-clientpref-", "vector-feature-page-tools-pinned-clientpref-"]
 PAGE_TTL = 86400
 MISSING_PAGE_TTL = 3600
-CACHED_NAMESPACES = ["", "Category", "Project", "Undertale_Wiki", "Deltarune_Wiki", "Categoría", "Categor%C3%ADa", "Categoria", "Catégorie", "Cat%C3%A9gorie", "カテゴリ", "%E3%82%AB%E3%83%86%E3%82%B4%E3%83%AA", "Wiki_Undertale_FR"]
+CACHED_NAMESPACES = [
+    "",
+    "Category",
+    "Project",
+    "File",
+    "Undertale_Wiki",
+    "Deltarune_Wiki",
+    "Categoría",
+    "Categor%C3%ADa",
+    "Categoria",
+    "Catégorie",
+    "Cat%C3%A9gorie",
+    "カテゴリ",
+    "%E3%82%AB%E3%83%86%E3%82%B4%E3%83%AA",
+    "Arquivo",
+    "Archivo",
+    "Fichier",
+    "ファイル",
+    "%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB",
+    "Wiki_Undertale_FR"
+]

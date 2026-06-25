@@ -10,8 +10,8 @@ preview_urls = false
 enabled = true
 
 [vars]
-PRIVATE_COOKIE_NAMES = ["utdrprod-_Session", "utdrprod-Token"]
-PRIVATE_COOKIE_NAMES_DEV = ["utdrdev-_Session", "utdrdev-Token"]
+PRIVATE_COOKIE_NAMES = ["utdrprod-_session", "utdrprod-Token"]
+PRIVATE_COOKIE_NAMES_DEV = ["utdrdev-_session", "utdrdev-Token"]
 CLIENT_PREFS_COOKIE_NAME = "utdrprod-mwclientpreferences"
 CLIENT_PREFS_COOKIE_NAME_DEV = "utdrdev-mwclientpreferences"
 CLIENT_PREFS_CLASS_PREFIXES = ["skin-theme-clientpref-", "vector-feature-limited-width-clientpref-", "vector-feature-page-tools-pinned-clientpref-"]

@@ -14,7 +14,7 @@
 		/* Specify how TypeScript looks up a file from a given module specifier. */
 		"moduleResolution": "Bundler",
 		/* Specify type package names to be included without being referenced in a source file. */
-		"types": ["worker-configuration.d.ts"],
+		"types": ["./worker-configuration.d.ts"],
 		/* Enable importing .json files */
 		"resolveJsonModule": true,
 
@@ -32,7 +32,10 @@
 		"forceConsistentCasingInFileNames": true,
 
 		/* Enable all strict type-checking options. */
-		"strict": true
+		"strict": true,
+
+		/* Skip type checking all .d.ts files. */
+		"skipLibCheck": true
 	},
 	"include": ["worker-configuration.d.ts", "src/**/*.ts"]
 }

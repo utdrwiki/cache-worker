@@ -1,4 +1,4 @@
-import { parse } from 'cookie';
+import { parseCookie, Cookies } from 'cookie';
 import { ClientPref } from '../types';
 import { WikiResponse } from './WikiResponse';
 
@@ -32,7 +32,7 @@ export class WikiRequest {
   private req: Request;
   private readonly env: Env;
   private readonly isDev: boolean;
-  public readonly cookies: Record<string, string | undefined> = {};
+  public readonly cookies: Cookies = {};
   public readonly url: URL;
   public readonly isEligibleForCache: boolean;
   private readonly eligibilityReason: EligibilityReason;
@@ -43,7 +43,7 @@ export class WikiRequest {
 
     const cookieHeader = this.req.headers.get('Cookie');
     if (cookieHeader) {
-      this.cookies = parse(cookieHeader);
+      this.cookies = parseCookie(cookieHeader);
     }
 
     this.url = new URL(this.req.url);

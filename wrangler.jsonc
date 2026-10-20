@@ -42,6 +42,36 @@
 			"ファイル",
 			"%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB",
 			"Wiki_Undertale_FR",
+		],
+		"IS_DEV": false,
+	},
+	"env": {
+		"dev": {
+			"vars": {
+				"PRIVATE_COOKIE_NAMES": [],
+				"PRIVATE_COOKIE_NAMES_DEV": [],
+				"CLIENT_PREFS_COOKIE_NAME": "",
+				"CLIENT_PREFS_COOKIE_NAME_DEV": "",
+				"CLIENT_PREFS_CLASS_PREFIXES": [],
+				"PAGE_TTL": 86400,
+				"MISSING_PAGE_TTL": 3600,
+				"CACHED_NAMESPACES": [],
+				"IS_DEV": true,
+			},
+			"secrets": {
+				"required": [
+					"BOT_QUERY_PARAM_ALLOWLIST",
+					"BOT_QUERY_PARAM_BLOCKLIST",
+					"BOT_SIGNING_KEY",
+				]
+			}
+		},
+	},
+	"secrets": {
+		"required": [
+			"BOT_QUERY_PARAM_ALLOWLIST",
+			"BOT_QUERY_PARAM_BLOCKLIST",
+			"BOT_SIGNING_KEY",
 		]
 	},
 }

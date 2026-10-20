@@ -1,4 +1,5 @@
 import { WikiRequest } from './lib/WikiRequest';
+import { serveBotPage } from './services/bots';
 import { log } from './services/logger';
 
 export default {
@@ -6,6 +7,10 @@ export default {
     ctx.passThroughOnException();
 
     const request = new WikiRequest(req, env);
+
+    if (await request.checkBot()) {
+      return serveBotPage(request);
+    }
 
     const response = await request.fetch().catch(err => {
       log({

@@ -1,3 +1,4 @@
+.dev.vars
 .vscode
 node_modules
 .wrangler

@@ -36,6 +36,7 @@ export class WikiRequest {
   public readonly url: URL;
   public readonly isEligibleForCache: boolean;
   private readonly eligibilityReason: EligibilityReason;
+  private _captchaKey: CryptoKey | null = null;
 
   constructor(req: Request, env: Env) {
     this.req = req;
@@ -47,7 +48,7 @@ export class WikiRequest {
     }
 
     this.url = new URL(this.req.url);
-    this.isDev = this.url.host.startsWith('dev.');
+    this.isDev = this.url.host.startsWith('dev.') || env.IS_DEV;
     this.eligibilityReason = this.getEligibility();
     this.isEligibleForCache = this.eligibilityReason === EligibilityReason.Eligible;
   }
@@ -86,6 +87,58 @@ export class WikiRequest {
       return this.extractArticle(this.url.pathname.slice(3));
     }
     return null;
+  }
+
+  private async getCaptchaKey() {
+    if (!this._captchaKey) {
+      const encodedKey = new TextEncoder().encode(this.env.BOT_SIGNING_KEY);
+      this._captchaKey = await crypto.subtle.importKey('raw', encodedKey, {
+        name: 'HMAC',
+        hash: 'SHA-256',
+      }, false, ['sign', 'verify']);
+    }
+    return this._captchaKey;
+  }
+
+  private getCaptchaPayload(timestamp: number): Uint8Array {
+    const ip = this.req.headers.get('cf-connecting-ip') ?? '';
+    return new TextEncoder().encode(`${ip}:${timestamp}`);
+  }
+
+  public async checkBot(): Promise<boolean> {
+    if (!this.isDev) {
+      return false;
+    }
+    if (this.eligibilityReason === EligibilityReason.HasPrivateCookie) {
+      return false;
+    }
+    if (JSON.parse(this.env.BOT_QUERY_PARAM_ALLOWLIST)
+      .some((p: string) => this.url.searchParams.has(p))) {
+      return false;
+    }
+    if (!JSON.parse(this.env.BOT_QUERY_PARAM_BLOCKLIST)
+      .some((p: string) => this.url.searchParams.has(p))) {
+      return false;
+    }
+    if (this.cookies['utdrforest-sig'] && this.cookies['utdrforest-ts']) {
+      const captchaKey = await this.getCaptchaKey();
+      const timestamp = Number(this.cookies['utdrforest-ts']);
+      if (timestamp && Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+        const payload = this.getCaptchaPayload(timestamp);
+        const signature = Buffer.from(this.cookies['utdrforest-sig'], 'hex').buffer;
+        if (await crypto.subtle.verify('HMAC', captchaKey, signature, payload)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  public async getCaptchaSignature(timestamp: number): Promise<string> {
+    const captchaKey = await this.getCaptchaKey();
+    const payload = this.getCaptchaPayload(timestamp);
+    const signature = await crypto.subtle.sign('HMAC', captchaKey, payload);
+    return Buffer.from(signature).toString('hex');
   }
 
   getEligibility(): EligibilityReason {
@@ -138,7 +191,7 @@ export class WikiRequest {
     return clientPrefs;
   }
 
-  async fetch(): Promise<WikiResponse> {    
+  async fetch(): Promise<WikiResponse> {
     // Change index.php lookups to go to `/w/` instead.
     const targetArticle = this.targetArticle;
     if (this.isEligibleForCache && targetArticle && this.url.pathname === '/index.php') {
@@ -148,6 +201,17 @@ export class WikiRequest {
       this.req = new Request(this.url.toString(), this.req);
     }
 
+    if (this.env.IS_DEV) {
+      // Avoid redirect loops in development
+      return new WikiResponse(new Response(
+        '<!DOCTYPE html><html><head><title>cache-worker</title></head><body>Nothing here!</body></html>',
+        {
+          headers: {
+            'Content-Type': 'text/html',
+          }
+        }
+      ));
+    }
     const headers = new Headers(this.req.headers);
     headers.set('X-Eligibility-Reason', this.eligibilityReason);
     const res = await fetch(this.req, {

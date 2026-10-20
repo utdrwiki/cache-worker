@@ -106,9 +106,6 @@ export class WikiRequest {
   }
 
   public async checkBot(): Promise<boolean> {
-    if (!this.isDev) {
-      return false;
-    }
     if (this.eligibilityReason === EligibilityReason.HasPrivateCookie) {
       return false;
     }

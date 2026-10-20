@@ -126,11 +126,11 @@
   for (const button of buttons) {
     button.addEventListener('pointerdown', event => {
       event.preventDefault();
-      pressed[button.className] = true;
+      pressed[button.classList[0]] = true;
     });
     button.addEventListener('pointerup', event => {
       event.preventDefault();
-      delete pressed[button.className];
+      delete pressed[button.classList[0]];
     });
   }
 
